@@ -1,4 +1,4 @@
-from ApiName import create_app
+from schoolAI import create_app
 
 app = create_app()
 

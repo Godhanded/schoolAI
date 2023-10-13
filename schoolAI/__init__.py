@@ -1,5 +1,5 @@
 from flask_limiter.util import get_remote_address
-from ApiName.config import App_Config
+from schoolAI.config import App_Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_session import Session
@@ -48,8 +48,8 @@ def create_app(config_class=App_Config):
     # Initialize cache
     cache.init_app(app)
 
-    from ApiName.auth.routes import auth
-    from ApiName.errors.handlers import error
+    from schoolAI.auth.routes import auth
+    from schoolAI.errors.handlers import error
 
     app.register_blueprint(auth)
     app.register_blueprint(error)

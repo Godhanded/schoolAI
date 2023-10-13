@@ -1,7 +1,6 @@
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from ApiName.errors.handlers import UtilError
+from schoolAI.errors.handlers import UtilError
 from flask import current_app, url_for, render_template
-from ApiName import db, mail
+from schoolAI import db, mail
 from flask_mail import Message
 
 
@@ -40,32 +39,6 @@ def query_paginate_filtered(table, page, **kwargs):
     )
 
 
-# jwt helpers
-def get_reset_token(user, expires_sec=1800):
-    s = Serializer(current_app.config["SECRET_KEY"], expires_sec)
-    return s.dumps({"user_id": user.id}).decode("utf-8")
-
-
-def verify_reset_token(user, token):
-    s = Serializer(current_app.config["SECRET_KEY"])
-    try:
-        user_id = s.loads(token)["user_id"]
-    except:
-        return None
-    return query_one_filtered(user, id=user_id)
-
-
-# Flask Mail helpers
-def send_email(user, url_func):
-    token = get_reset_token(user)
-    msg = Message(
-        "Secret Link Request", sender="noreply@demo.com", recipients=[user.email]
-    )
-    msg.body = render_template(
-        "mail_template.html", token=url_for(url_func, token=token, _external=True)
-    )
-    mail.send(msg)
-    # print(url_for(url_func, token=token, _external=True))
 
 
 # session helpers

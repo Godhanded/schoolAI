@@ -21,13 +21,3 @@ class App_Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
-
-    MAIL_SERVER = "smtp.gmail.com"
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USE_SSL = False
-    MAIL_USERNAME = os.environ.get("USER_NAME")
-    MAIL_PASSWORD = os.environ.get("PASS")
-
-    CACHE_TYPE = "FileSystemCache"
-    CACHE_DIR = "cache"

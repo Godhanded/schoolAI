@@ -1,6 +1,5 @@
-from sqlalchemy.dialects.postgresql import JSON
 from datetime import datetime
-from ApiName import db
+from schoolAI import db
 from uuid import uuid4
 import enum
 

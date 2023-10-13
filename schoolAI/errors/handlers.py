@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from ApiName import db
+from schoolAI import db
 
 error = Blueprint("error", __name__)
 
