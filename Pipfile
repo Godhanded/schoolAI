@@ -58,6 +58,7 @@ werkzeug = "==3.0.0"
 wrapt = "==1.15.0"
 openai = "*"
 pyjwt = "*"
+requests = "*"
 
 [dev-packages]
 
