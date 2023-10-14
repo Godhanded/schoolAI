@@ -28,7 +28,7 @@ def explain_topic(payload):
         explanation = explain(topic)
         explanations[topic] = explanation
         explained_topic = ExplainedTopics.query.filter_by(topic=topic).first()
-        if explain_topic:
+        if explained_topic:
             explained_topic.explanation = explanation
             explained_topic.update()
         else:
