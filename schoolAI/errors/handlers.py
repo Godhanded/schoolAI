@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify
+from schoolAI.auth.auth import AuthError
 from schoolAI import db
 
 error = Blueprint("error", __name__)
@@ -21,37 +22,65 @@ def clean_up(exc):
 
 @error.app_errorhandler(UtilError)
 def resource_not_found(err):
-    return jsonify({"error": err.error, "message": err.message}), err.code
+    return (
+        jsonify({"error": err.error, "status": True, "message": err.message}),
+        err.code,
+    )
+
+
+@error.app_errorhandler(AuthError)
+def auth_error(err):
+    return (
+        jsonify(
+            {"error": "Authorization Error", "status": True, "message": err.message}
+        ),
+        err.status_code,
+    )
 
 
 @error.app_errorhandler(400)
 def bad_request(error):
-    return jsonify({"error": error.name, "message": error.description}), 400
+    return (
+        jsonify({"error": error.name, "status": True, "message": error.description}),
+        400,
+    )
 
 
 @error.app_errorhandler(404)
 def resource_not_found(error):
-    return jsonify({"error": error.name, "message": error.description}), 404
+    return (
+        jsonify({"error": error.name, "status": True, "message": error.description}),
+        404,
+    )
 
 
 @error.app_errorhandler(405)
 def method_not_allowed(error):
     return (
-        jsonify({"error": error.name, "message": error.description}),
+        jsonify({"error": error.name, "status": True, "message": error.description}),
         405,
     )
 
 
 @error.app_errorhandler(422)
 def cant_process(error):
-    return jsonify({"error": error.name, "message": error.description}), 422
+    return (
+        jsonify({"error": error.name, "status": True, "message": error.description}),
+        422,
+    )
 
 
 @error.app_errorhandler(429)
 def cant_process(error):
-    return jsonify({"error": error.name, "message": error.description}), 429
+    return (
+        jsonify({"error": error.name, "status": True, "message": error.description}),
+        429,
+    )
 
 
 @error.app_errorhandler(500)
 def server_error(error):
-    return jsonify({"error": error.name, "message": "Its not you its us"}), 500
+    return (
+        jsonify({"error": error.name, "status": True, "message": "Its not you its us"}),
+        500,
+    )
