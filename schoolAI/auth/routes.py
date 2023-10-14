@@ -1,6 +1,9 @@
 from flask import jsonify, request, Blueprint
 from schoolAI.models import Users
-from schoolAI.errors.handlers import UtilError
+from schoolAI.errors.handlers import CustomError
+from schoolAI.schemas import RegisterSchema, LoginSchema
+from pydantic import ValidationError
+from schoolAI.utils import raise_input_error
 from schoolAI.auth.auth import requires_auth, encode_jwt
 from schoolAI import bcrypt
 
@@ -11,17 +14,18 @@ auth = Blueprint("auth", __name__, url_prefix="/auth")
 @auth.route("/register", methods=["POST"])
 def signup():
     data = request.get_json()
-    email, password = data.get("email"), data.get("password")
+    try:
+        data = RegisterSchema(**data)
+    except ValidationError as e:
+        raise_input_error(e)
 
-    if not email or not password:
-        raise UtilError("Bad Request", 400, "Missing required fields")
-
-    user = Users.query.filter_by(email=email).one_or_none()
+    user = Users.query.filter_by(email=data.email).one_or_none()
     if user:
-        raise UtilError("Forbidden", 403, "This user alread exists")
+        raise CustomError("Forbidden", 403, "This user alread exists")
 
     user = Users(
-        email=email, password=bcrypt.generate_password_hash(password).decode("utf-8")
+        email=data.email,
+        password=bcrypt.generate_password_hash(data.password).decode("utf-8"),
     )
     user.insert()
 
@@ -41,22 +45,23 @@ def signup():
 @auth.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    email, password = data.get("email"), data.get("password")
+    try:
+        data = LoginSchema(**data)
+    except ValidationError as e:
+        raise_input_error(e)
 
-    if not email or not password:
-        raise UtilError("Bad Request", 400, "Missing Required fields")
-    user = Users.query.filter_by(email=email).one_or_none()
+    user = Users.query.filter_by(email=data.email).one_or_none()
     if not user:
-        raise UtilError("Unauthorized", 401, "User does not exist")
-    if not bcrypt.check_password_hash(user.password, password):
-        raise UtilError("Unauthorized", 401, "Passwords do not match")
+        raise CustomError("Unauthorized", 401, "User does not exist")
+    if not bcrypt.check_password_hash(user.password, data.password):
+        raise CustomError("Unauthorized", 401, "Passwords do not match")
     return (
         jsonify(
             {
                 "status": True,
                 "message": "success",
                 "user": user.format(),
-                "token": encode_jwt(user.id)
+                "token": encode_jwt(user.id),
             }
         ),
         200,
@@ -69,5 +74,5 @@ def get_loged_in_user(payload):
     id = payload.get("user_id")
     user = Users.query.get(id)
     if not user:
-        raise UtilError("Unauthorized", 401, "Invalid token")
+        raise CustomError("Unauthorized", 401, "Invalid token")
     return jsonify({"status": True, "message": "success", "user": user.format()}), 200

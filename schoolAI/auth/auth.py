@@ -103,8 +103,7 @@ def verify_decode_jwt(token):
         return payload
     except jwt.ExpiredSignatureError:
         raise AuthError("session_expired", 401)
-    except jwt.InvalidTokenError as e:
-        print(e)
+    except jwt.InvalidTokenError:
         raise AuthError("Invalid token", 401)
     except Exception:
         raise AuthError("Unable to parse authentication token", 400)

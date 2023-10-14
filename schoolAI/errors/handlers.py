@@ -5,7 +5,7 @@ from schoolAI import db
 error = Blueprint("error", __name__)
 
 
-class UtilError(Exception):
+class CustomError(Exception):
     def __init__(self, error, code, message):
         self.error = error
         self.code = code
@@ -20,7 +20,7 @@ def clean_up(exc):
         pass
 
 
-@error.app_errorhandler(UtilError)
+@error.app_errorhandler(CustomError)
 def resource_not_found(err):
     return (
         jsonify({"error": err.error, "status": True, "message": err.message}),
