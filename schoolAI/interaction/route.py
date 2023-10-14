@@ -14,10 +14,10 @@ openai.api_key = os.getenv("OPENAI_KEY")
 @interaction.route("/explain", methods=["POST"])
 @requires_auth(request=request)
 def explain_topic(payload):
-    id = payload.get("_id")
+    id = payload.get("user_id")
     data = request.get_json()
-    topics = data.get("topic")
-    if not topic:
+    topics = data.get("topics")
+    if not topics:
         raise UtilError("Bad Request", 400, "Please provide valid topic")
 
     explanations = {}
@@ -41,7 +41,7 @@ def explain_topic(payload):
 @interaction.route("/history")
 @requires_auth(request)
 def get_explanation_history(payload):
-    id = payload.get("_id")
+    id = payload.get("user_id")
 
     user = Users.query.get(id)
     if not user:

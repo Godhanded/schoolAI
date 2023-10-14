@@ -1,12 +1,14 @@
 from schoolAI import db
-from openai import Completion
+from openai import ChatCompletion
 
 
 # openai helpers
 def explain(topic):
-    response = Completion.create(
-        engine="davinci",
-        prompt=f"Explain the following in a detailed easy-to-understand way:\n{topic}",
+    message=[{"role":"system","content":"you are a very helpful and knowledgable teacher"},{"role":"user","content":f"Explain the following in a detailed easy-to-understand way:\n{topic}"}]
+    response = ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=message,
+        temperature=0.5,
         max_tokens=160,
     )
 

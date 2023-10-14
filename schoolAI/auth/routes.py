@@ -11,7 +11,7 @@ auth = Blueprint("auth", __name__, url_prefix="/auth")
 @auth.route("/register", methods=["POST"])
 def signup():
     data = request.get_json()
-    email, password = data.get("email"), data.get("user_name"), data.get("password")
+    email, password = data.get("email"), data.get("password")
 
     if not email or not password:
         raise UtilError("Bad Request", 400, "Missing required fields")
@@ -30,7 +30,7 @@ def signup():
             {
                 "status": True,
                 "message": "success",
-                "token": encode_jwt(user.id).decode("ASCII"),
+                "token": encode_jwt(user.id),
                 "user": user.format(),
             }
         ),
@@ -56,7 +56,7 @@ def login():
                 "status": True,
                 "message": "success",
                 "user": user.format(),
-                "token": encode_jwt(user.id).decode("ASCII"),
+                "token": encode_jwt(user.id)
             }
         ),
         200,
@@ -66,7 +66,7 @@ def login():
 @auth.route("/@me")
 @requires_auth(request=request)
 def get_loged_in_user(payload):
-    id = payload.get("_id")
+    id = payload.get("user_id")
     user = Users.query.get(id)
     if not user:
         raise UtilError("Unauthorized", 401, "Invalid token")
